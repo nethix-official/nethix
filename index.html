@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080611">
+
+<title>NETHIX | Your Media Universe</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  --primary: #9d4edd;
+  --secondary: #00d4ff;
+  --bg: #080611;
+  --card: rgba(255,255,255,0.055);
+  --border: rgba(255,255,255,0.12);
+  --text: #ffffff;
+  --muted: #aaa6bd;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Animated Background */
+
+.background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: .35;
+  animation: float 12s ease-in-out infinite alternate;
+}
+
+.orb.one {
+  width: 330px;
+  height: 330px;
+  background: #7928ca;
+  top: -100px;
+  left: -100px;
+}
+
+.orb.two {
+  width: 320px;
+  height: 320px;
+  background: #0077ff;
+  bottom: 10%;
+  right: -140px;
+  animation-delay: -4s;
+}
+
+.orb.three {
+  width: 220px;
+  height: 220px;
+  background: #ff00aa;
+  top: 45%;
+  left: 30%;
+  animation-delay: -7s;
+}
+
+@keyframes float {
+  from { transform: translate(0,0); }
+  to { transform: translate(45px,65px); }
+}
+
+/* Navigation */
+
+nav {
+  max-width: 1200px;
+  margin: auto;
+  padding: 25px 7%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.logo span {
+  color: var(--secondary);
+}
+
+.nav-badge {
+  font-size: 11px;
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  color: #c9c2e8;
+  background: var(--card);
+}
+
+/* Hero */
+
+.hero {
+  max-width: 950px;
+  margin: 65px auto 40px;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 9px 17px;
+  border-radius: 30px;
+  border: 1px solid rgba(157,78,221,.35);
+  background: rgba(157,78,221,.1);
+  color: #d6a9ff;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.hero h1 {
+  font-size: clamp(43px, 8vw, 78px);
+  font-weight: 900;
+  line-height: 1.12;
+  margin-top: 25px;
+  letter-spacing: -2px;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg,#bb86fc,#00d4ff,#e879f9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero p {
+  max-width: 570px;
+  margin: 22px auto;
+  color: var(--muted);
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+/* Main Card */
+
+.container {
+  width: 90%;
+  max-width: 720px;
+  margin: 45px auto;
+}
+
+.card {
+  background: var(--card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: 25px;
+  padding: 30px;
+  box-shadow: 0 20px 70px rgba(0,0,0,.25);
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.card-subtitle {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 25px;
+}
+
+/* Tabs */
+
+.tabs {
+  display: flex;
+  background: rgba(0,0,0,.25);
+  border: 1px solid var(--border);
+  padding: 5px;
+  border-radius: 13px;
+  margin-bottom: 24px;
+}
+
+.tab {
+  flex: 1;
+  padding: 13px;
+  text-align: center;
+  border: none;
+  background: transparent;
+  color: #aaa;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.tab.active {
+  background: linear-gradient(120deg,#9333ea,#6366f1);
+  color: white;
+  box-shadow: 0 5px 20px rgba(147,51,234,.3);
+}
+
+/* Input */
+
+.input-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ccc;
+  margin-bottom: 11px;
+}
+
+.input-wrap {
+  display: flex;
+  align-items: center;
+  background: rgba(0,0,0,.25);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 6px;
+  transition: .3s;
+}
+
+.input-wrap:focus-within {
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168,85,247,.1);
+}
+
+.input-wrap input {
+  flex: 1;
+  min-width: 0;
+  padding: 13px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: white;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.paste-btn {
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.07);
+  color: white;
+  padding: 11px 15px;
+  border-radius: 9px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+}
+
+.download-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 17px;
+  border: none;
+  border-radius: 13px;
+  background: linear-gradient(110deg,#9333ea,#6366f1,#0891b2);
+  background-size: 200%;
+  color: white;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.download-btn:hover {
+  background-position: right;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 35px rgba(147,51,234,.3);
+}
+
+.note {
+  font-size: 11px;
+  color: #8f8a9e;
+  text-align: center;
+  margin-top: 18px;
+  line-height: 1.7;
+}
+
+/* Player */
+
+.player-section {
+  margin-top: 25px;
+  display: none;
+}
+
+.player-section.show {
+  display: block;
+  animation: appear .4s ease;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.player-section video {
+  width: 100%;
+  border-radius: 13px;
+  background: black;
+  max-height: 350px;
+}
+
+.save-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  padding: 14px;
+  margin-top: 15px;
+  border-radius: 11px;
+  color: white;
+  background: rgba(157,78,221,.2);
+  border: 1px solid rgba(157,78,221,.4);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Features */
+
+.features {
+  max-width: 1100px;
+  margin: 90px auto;
+  padding: 0 7%;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.section-desc {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 35px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 18px;
+}
+
+.feature {
+  padding: 25px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  transition: .3s;
+}
+
+.feature:hover {
+  transform: translateY(-5px);
+  border-color: #8b5cf6;
+}
+
+.feature-icon {
+  font-size: 29px;
+  margin-bottom: 20px;
+}
+
+.feature h3 {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.feature p {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+/* Footer */
+
+footer {
+  border-top: 1px solid var(--border);
+  text-align: center;
+  padding: 35px 20px;
+  margin-top: 80px;
+}
+
+footer .footer-logo {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+footer p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 2;
+}
+
+footer strong {
+  color: #c084fc;
+}
+
+/* Toast */
+
+.toast {
+  position: fixed;
+  bottom: 25px;
+  left: 50%;
+  transform: translate(-50%,30px);
+  background: #211632;
+  border: 1px solid #7e22ce;
+  padding: 14px 22px;
+  border-radius: 12px;
+  color: white;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: .3s;
+  z-index: 999;
+  width: max-content;
+  max-width: 90%;
+  text-align: center;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%,0);
+}
+
+@media(max-width:650px) {
+  .hero { margin-top: 40px; }
+  .card { padding: 21px; }
+  .feature-grid { grid-template-columns: 1fr; }
+  .features { margin-top: 65px; }
+  .hero h1 { letter-spacing: -1px; }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="background">
+  <div class="orb one"></div>
+  <div class="orb two"></div>
+  <div class="orb three"></div>
+</div>
+
+<nav>
+  <div class="logo">NETH<span>IX.</span></div>
+  <div class="nav-badge">✦ MEDIA UNIVERSE</div>
+</nav>
+
+<section class="hero">
+
+  <div class="hero-badge">
+    ✦ YOUTUBE, TIKTOK & FB DOWNLOADER
+  </div>
+
+  <h1>
+    Your Media.<br>
+    <span class="gradient-text">Your Universe.</span>
+  </h1>
+
+  <p>
+    Paste any YouTube, TikTok or Facebook video link
+    to preview and download directly to your gallery.
+  </p>
+
+</section>
+
+<main class="container">
+
+  <div class="card">
+
+    <h2 class="card-title">⚡ Social Downloader Studio</h2>
+
+    <p class="card-subtitle">
+      Enter your video link below to load.
+    </p>
+
+    <div class="tabs">
+      <button class="tab active">🎬 Video Downloader</button>
+    </div>
+
+    <label class="input-label">
+      VIDEO URL (YouTube / TikTok / Facebook)
+    </label>
+
+    <div class="input-wrap">
+
+      <input
+        type="url"
+        id="mediaURL"
+        placeholder="Paste YouTube / TikTok / FB link here..."
+      >
+
+      <button class="paste-btn" onclick="pasteLink()">
+        Paste
+      </button>
+
+    </div>
+
+    <button class="download-btn" onclick="processMedia()">
+      ⚡ LOAD & FETCH MEDIA
+    </button>
+
+    <p class="note">
+      Supports YouTube, TikTok, Facebook and more.<br>
+      Please use content you own or have permission to save.
+    </p>
+
+    <div class="player-section" id="playerSection">
+
+      <div id="playerContainer"></div>
+
+      <a
+        id="saveLink"
+        class="save-btn"
+        href="#"
+        download="nethix_video.mp4"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        ↓ DOWNLOAD VIDEO FILE
+      </a>
+
+    </div>
+
+  </div>
+
+</main>
+
+<section class="features">
+
+  <h2 class="section-title">
+    Built for Your <span class="gradient-text">Experience.</span>
+  </h2>
+
+  <p class="section-desc">
+    Everything you need in one elegant media space.
+  </p>
+
+  <div class="feature-grid">
+
+    <div class="feature">
+      <div class="feature-icon">⚡</div>
+      <h3>Simple & Fast</h3>
+      <p>
+        A lightweight interface designed for a smooth
+        experience across devices.
+      </p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">🎬</div>
+      <h3>Media Player</h3>
+      <p>
+        Preview supported video files
+        directly inside your browser.
+      </p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">💜</div>
+      <h3>Premium Design</h3>
+      <p>
+        A modern visual experience featuring elegant
+        glass effects and animated gradients.
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+<footer>
+
+  <div class="footer-logo">
+    NETH<span style="color:#00d4ff">IX.</span>
+  </div>
+
+  <p>Your Media. Your Universe.</p>
+
+  <p>
+    © 2026 NETHIX. All Rights Reserved.<br>
+    Designed & Created by <strong>NETHUL 👑</strong>
+  </p>
+
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+let toastTimer;
+let currentDownloadUrl = "";
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
+}
+
+async function pasteLink() {
+  try {
+    const text = await navigator.clipboard.readText();
+    document.getElementById("mediaURL").value = text;
+    showToast("Link pasted successfully!");
+  } catch(error) {
+    showToast("Please paste your link manually.");
+  }
+}
+
+async function processMedia() {
+  const input = document.getElementById("mediaURL");
+  const url = input.value.trim();
+  const loadBtn = document.querySelector(".download-btn");
+
+  if(!url) {
+    showToast("Please enter a video URL!");
+    return;
+  }
+
+  loadBtn.textContent = "⏳ PROCESSING...";
+  loadBtn.disabled = true;
+
+  try {
+    const response = await fetch("https://api.cobalt.tools/api/json", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        url: url,
+        vQuality: "720",
+        filenamePattern: "classic"
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.status === "redirect" || data.status === "stream" || data.url) {
+      currentDownloadUrl = data.url || (data.picker && data.picker[0].url);
+
+      const container = document.getElementById("playerContainer");
+      container.replaceChildren();
+
+      const player = document.createElement("video");
+      player.controls = true;
+      player.preload = "metadata";
+      player.src = currentDownloadUrl;
+
+      player.addEventListener("error", () => {
+        showToast("Preview could not be loaded, but you can download it below.");
+      });
+
+      container.appendChild(player);
+
+      const saveLink = document.getElementById("saveLink");
+      saveLink.href = currentDownloadUrl;
+
+      document.getElementById("playerSection").classList.add("show");
+      showToast("Media loaded successfully! 🎬");
+
+    } else {
+      showToast(data.text || "Could not process this link. Try another one.");
+    }
+
+  } catch (error) {
+    showToast("Network error. Please check your internet connection.");
+  } finally {
+    loadBtn.textContent = "⚡ LOAD & FETCH MEDIA";
+    loadBtn.disabled = false;
+  }
+}
+</script>
+
+</body>
+</html>
