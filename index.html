@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080611">
 
-<title>NETHIX | Your Media Universe</title>
+<title>NETHIX 1.0 | Your Media Universe</title>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
@@ -474,13 +474,13 @@ footer strong {
 
 <nav>
   <div class="logo">NETH<span>IX.</span></div>
-  <div class="nav-badge">✦ MEDIA UNIVERSE</div>
+  <div class="nav-badge">✦ NETHIX 1.0</div>
 </nav>
 
 <section class="hero">
 
   <div class="hero-badge">
-    ✦ YOUTUBE, TIKTOK & FB DOWNLOADER
+    ✦ NETHIX 1.0 MEDIA STUDIO
   </div>
 
   <h1>
@@ -489,8 +489,7 @@ footer strong {
   </h1>
 
   <p>
-    Paste any YouTube, TikTok or Facebook video link
-    to preview and download directly to your gallery.
+    Paste a supported public video link to download a permitted copy to your device. Availability varies by platform and video.
   </p>
 
 </section>
@@ -528,11 +527,11 @@ footer strong {
     </div>
 
     <button class="download-btn" onclick="processMedia()">
-      ⚡ LOAD & FETCH MEDIA
+      ⬇ DOWNLOAD VIDEO
     </button>
 
     <p class="note">
-      Supports YouTube, TikTok, Facebook and more.<br>
+      Supports eligible public YouTube, TikTok and Facebook links.<br>
       Please use content you own or have permission to save.
     </p>
 
@@ -618,93 +617,52 @@ footer strong {
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
+// Change this to your actual Python backend URL after deployment (no trailing slash).
+const API_BASE = "https://YOUR-BACKEND.onrender.com";
 let toastTimer;
-let currentDownloadUrl = "";
-
 function showToast(message) {
-  const toast = document.getElementById("toast");
-  toast.textContent = message;
-  toast.classList.add("show");
-
+  const t = document.getElementById("toast");
+  t.textContent = message; t.classList.add("show");
   clearTimeout(toastTimer);
-
-  toastTimer = setTimeout(() => {
-    toast.classList.remove("show");
-  }, 3000);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 4500);
 }
-
 async function pasteLink() {
-  try {
-    const text = await navigator.clipboard.readText();
-    document.getElementById("mediaURL").value = text;
-    showToast("Link pasted successfully!");
-  } catch(error) {
-    showToast("Please paste your link manually.");
-  }
+  try { document.getElementById("mediaURL").value = await navigator.clipboard.readText(); showToast("Link pasted!"); }
+  catch (_) { showToast("Paste your link manually."); }
 }
-
 async function processMedia() {
-  const input = document.getElementById("mediaURL");
-  const url = input.value.trim();
-  const loadBtn = document.querySelector(".download-btn");
-
-  if(!url) {
-    showToast("Please enter a video URL!");
-    return;
-  }
-
-  loadBtn.textContent = "⏳ PROCESSING...";
-  loadBtn.disabled = true;
-
+  const url = document.getElementById("mediaURL").value.trim();
+  const btn = document.querySelector(".download-btn");
+  const section = document.getElementById("playerSection");
+  section.classList.remove("show");
+  if (!url) { showToast("Please paste a video link."); return; }
+  try { const u = new URL(url); if (u.protocol !== "https:") throw Error(); }
+  catch (_) { showToast("Enter a valid HTTPS video link."); return; }
+  if (API_BASE.includes("YOUR-BACKEND")) { showToast("Set your deployed backend URL in index.html first."); return; }
+  btn.disabled = true; btn.textContent = "⏳ PREPARING DOWNLOAD...";
   try {
-    const response = await fetch("https://api.cobalt.tools/api/json", {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        url: url,
-        vQuality: "720",
-        filenamePattern: "classic"
-      })
+    const response = await fetch(API_BASE + "/api/download", {
+      method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({url})
     });
-
-    const data = await response.json();
-
-    if (data.status === "redirect" || data.status === "stream" || data.url) {
-      currentDownloadUrl = data.url || (data.picker && data.picker[0].url);
-
-      const container = document.getElementById("playerContainer");
-      container.replaceChildren();
-
-      const player = document.createElement("video");
-      player.controls = true;
-      player.preload = "metadata";
-      player.src = currentDownloadUrl;
-
-      player.addEventListener("error", () => {
-        showToast("Preview could not be loaded, but you can download it below.");
-      });
-
-      container.appendChild(player);
-
-      const saveLink = document.getElementById("saveLink");
-      saveLink.href = currentDownloadUrl;
-
-      document.getElementById("playerSection").classList.add("show");
-      showToast("Media loaded successfully! 🎬");
-
-    } else {
-      showToast(data.text || "Could not process this link. Try another one.");
+    if (!response.ok) {
+      let msg = "Download failed (" + response.status + ").";
+      try { const data = await response.json(); msg = data.error || msg; } catch (_) {}
+      throw new Error(msg);
     }
-
-  } catch (error) {
-    showToast("Network error. Please check your internet connection.");
-  } finally {
-    loadBtn.textContent = "⚡ LOAD & FETCH MEDIA";
-    loadBtn.disabled = false;
-  }
+    const blob = await response.blob();
+    const objectURL = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = objectURL; link.download = "NETHIX_video." + (blob.type.includes("webm") ? "webm" : "mp4");
+    document.body.appendChild(link); link.click(); link.remove();
+    const container = document.getElementById("playerContainer"); container.replaceChildren();
+    const video = document.createElement("video"); video.controls = true; video.preload = "metadata"; video.src = objectURL;
+    container.appendChild(video);
+    const saveLink = document.getElementById("saveLink"); saveLink.href = objectURL; saveLink.download = link.download;
+    section.classList.add("show");
+    showToast("Download requested! Check your browser Downloads.");
+    // Keep the object URL alive for the preview / repeat save during this page visit.
+  } catch (e) { showToast(e.message || "Could not download this video."); }
+  finally { btn.disabled = false; btn.textContent = "⬇ DOWNLOAD VIDEO"; }
 }
 </script>
 
