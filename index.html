@@ -509,7 +509,7 @@ footer strong {
     </div>
 
     <label class="input-label">
-      VIDEO URL (YouTube / TikTok / Facebook)
+      DIRECT MP4 VIDEO URL
     </label>
 
     <div class="input-wrap">
@@ -531,8 +531,8 @@ footer strong {
     </button>
 
     <p class="note">
-      Supports eligible public YouTube, TikTok and Facebook links.<br>
-      Please use content you own or have permission to save.
+  Supports direct HTTPS MP4 links from servers that allow browser downloads.<br>
+  Please download only content you own or have permission to save.
     </p>
 
     <div class="player-section" id="playerSection">
@@ -617,52 +617,111 @@ footer strong {
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-// Change this to your actual Python backend URL after deployment (no trailing slash).
-const API_BASE = "https://nethul.pythonanywhere.com";
 let toastTimer;
+let currentObjectURL = null;
+
 function showToast(message) {
   const t = document.getElementById("toast");
-  t.textContent = message; t.classList.add("show");
+  t.textContent = message;
+  t.classList.add("show");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove("show"), 4500);
 }
+
 async function pasteLink() {
-  try { document.getElementById("mediaURL").value = await navigator.clipboard.readText(); showToast("Link pasted!"); }
-  catch (_) { showToast("Paste your link manually."); }
+  try {
+    document.getElementById("mediaURL").value =
+      await navigator.clipboard.readText();
+    showToast("Link pasted!");
+  } catch (_) {
+    showToast("Paste your link manually.");
+  }
 }
+
 async function processMedia() {
   const url = document.getElementById("mediaURL").value.trim();
   const btn = document.querySelector(".download-btn");
   const section = document.getElementById("playerSection");
+
   section.classList.remove("show");
-  if (!url) { showToast("Please paste a video link."); return; }
-  try { const u = new URL(url); if (u.protocol !== "https:") throw Error(); }
-  catch (_) { showToast("Enter a valid HTTPS video link."); return; }
-  if (API_BASE.includes("YOUR-BACKEND")) { showToast("Set your deployed backend URL in index.html first."); return; }
-  btn.disabled = true; btn.textContent = "⏳ PREPARING DOWNLOAD...";
+
+  if (!url) {
+    showToast("Please paste a direct MP4 video link.");
+    return;
+  }
+
+  let parsed;
+
   try {
-    const response = await fetch(API_BASE + "/api/download", {
-      method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({url})
-    });
+    parsed = new URL(url);
+    if (parsed.protocol !== "https:") throw new Error();
+  } catch (_) {
+    showToast("Enter a valid HTTPS link.");
+    return;
+  }
+
+  if (!parsed.pathname.toLowerCase().endsWith(".mp4")) {
+    showToast("Only direct MP4 file links are supported.");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "⏳ PREPARING DOWNLOAD...";
+
+  try {
+    // The remote server must permit cross-origin access.
+    const response = await fetch(url);
+
     if (!response.ok) {
-      let msg = "Download failed (" + response.status + ").";
-      try { const data = await response.json(); msg = data.error || msg; } catch (_) {}
-      throw new Error(msg);
+      throw new Error("Video server returned " + response.status);
     }
+
     const blob = await response.blob();
-    const objectURL = URL.createObjectURL(blob);
+
+    if (!blob.type.startsWith("video/")) {
+      throw new Error("The link did not return a video file.");
+    }
+
+    if (currentObjectURL) {
+      URL.revokeObjectURL(currentObjectURL);
+    }
+
+    currentObjectURL = URL.createObjectURL(blob);
+
     const link = document.createElement("a");
-    link.href = objectURL; link.download = "NETHIX_video." + (blob.type.includes("webm") ? "webm" : "mp4");
-    document.body.appendChild(link); link.click(); link.remove();
-    const container = document.getElementById("playerContainer"); container.replaceChildren();
-    const video = document.createElement("video"); video.controls = true; video.preload = "metadata"; video.src = objectURL;
+    link.href = currentObjectURL;
+    link.download = "NETHIX_video.mp4";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    const container = document.getElementById("playerContainer");
+    container.replaceChildren();
+
+    const video = document.createElement("video");
+    video.controls = true;
+    video.preload = "metadata";
+    video.src = currentObjectURL;
+
     container.appendChild(video);
-    const saveLink = document.getElementById("saveLink"); saveLink.href = objectURL; saveLink.download = link.download;
+
+    const saveLink = document.getElementById("saveLink");
+    saveLink.href = currentObjectURL;
+    saveLink.download = "NETHIX_video.mp4";
+
     section.classList.add("show");
-    showToast("Download requested! Check your browser Downloads.");
-    // Keep the object URL alive for the preview / repeat save during this page visit.
-  } catch (e) { showToast(e.message || "Could not download this video."); }
-  finally { btn.disabled = false; btn.textContent = "⬇ DOWNLOAD VIDEO"; }
+
+    showToast("Download requested! Check your Downloads.");
+
+  } catch (error) {
+    showToast(
+      "Could not fetch this file. The video host may block browser downloads."
+    );
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "⬇ DOWNLOAD VIDEO";
+  }
 }
 </script>
 
